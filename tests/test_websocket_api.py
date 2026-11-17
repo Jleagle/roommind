@@ -1237,6 +1237,18 @@ async def test_save_settings_climate_control_refreshes_at_once(ws_hass, store, c
     coordinator.async_request_refresh.assert_awaited_once()
 
 
+@pytest.mark.asyncio
+async def test_save_settings_presence_refreshes_at_once(ws_hass, store, connection):
+    """The panel toggle applies to the rooms and updates switch.roommind_presence now."""
+    await store.async_load()
+    coordinator = MagicMock()
+    coordinator.async_request_refresh = AsyncMock()
+    ws_hass.data[DOMAIN]["coordinator"] = coordinator
+
+    await _save_settings(ws_hass, connection, {"id": 15, "type": "roommind/settings/save", "presence_enabled": True})
+    coordinator.async_request_refresh.assert_awaited_once()
+
+
 # ---------------------------------------------------------------------------
 # Vacation mode tests
 # ---------------------------------------------------------------------------
