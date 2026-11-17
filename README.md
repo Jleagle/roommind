@@ -171,6 +171,7 @@ An Extended Kalman Filter watches the room temperature and learns each room's he
 | `climate.roommind_{area_id}` | The room as one thermostat, see [Room climate entity](#room-climate-entity) |
 | `switch.roommind_vacation` | Global vacation mode toggle |
 | `switch.roommind_climate_control` | Global climate control toggle, the same as `Settings → General`. Off stops RoomMind controlling all rooms and leaves the devices as they are, e.g. for a summer/winter automation |
+| `switch.roommind_presence` | Global presence toggle, the same as `Follow presence` in `Settings → Presence`. Off stops rooms dropping to eco or switching off while everyone is away, e.g. while guests are staying |
 | `switch.roommind_{area_id}_cover_auto` | Per-room automatic cover control toggle |
 | `binary_sensor.roommind_{area_id}_cover_paused` | On when manual cover override is detected |
 | `binary_sensor.roommind_{area_id}_air_quality` | On while the room's CO₂ or VOC is past its threshold (rooms with an air quality sensor); attributes `co2`, `voc`, `reason`, `ventilation_active` |
