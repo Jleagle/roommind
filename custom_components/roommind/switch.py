@@ -37,6 +37,7 @@ async def async_setup_entry(
     entities: list[SwitchEntity] = [
         RoomMindVacationSwitch(coordinator),
         RoomMindGlobalClimateControlSwitch(coordinator),
+        RoomMindPresenceSwitch(coordinator),
     ]
 
     rooms = rooms_with_area(hass, store.get_rooms())
@@ -176,4 +177,32 @@ class RoomMindGlobalClimateControlSwitch(CoordinatorEntity, SwitchEntity):
     async def async_turn_off(self, **kwargs: Any) -> None:
         store = self.coordinator.hass.data[DOMAIN]["store"]
         await store.async_save_settings({"climate_control_active": False})
+        await self.coordinator.async_request_refresh()
+
+
+class RoomMindPresenceSwitch(CoordinatorEntity, SwitchEntity):
+    """Switch mirroring the "Follow presence" setting of the settings page."""
+
+    _attr_has_entity_name = True
+
+    def __init__(self, coordinator: RoomMindCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{DOMAIN}_presence"
+        self._attr_name = "Follow Presence"
+        self._attr_icon = "mdi:home-account"
+        self.entity_id = f"switch.{DOMAIN}_presence"
+
+    @property
+    def is_on(self) -> bool:
+        store = self.coordinator.hass.data[DOMAIN]["store"]
+        return bool(store.get_settings().get("presence_enabled", False))
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        store = self.coordinator.hass.data[DOMAIN]["store"]
+        await store.async_save_settings({"presence_enabled": True})
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        store = self.coordinator.hass.data[DOMAIN]["store"]
+        await store.async_save_settings({"presence_enabled": False})
         await self.coordinator.async_request_refresh()
