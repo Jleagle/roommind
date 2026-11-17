@@ -1,0 +1,18 @@
+name: presence-switch
+extends: presence-away-force-off
+description: >
+  switch.roommind_presence mirrors "Follow presence". Off through the entity while
+  everybody is away: the room is back on its schedule and the device runs again. A
+  reload in between must keep the entity (the startup cleanup removes every roommind_
+  uid no room owns). On again through the entity: the device is switched off again.
+tags: [presence, settings]
+timeline:
+  - {at: "+1d09h", do: ha.service, service: switch.turn_off, data: {entity_id: switch.roommind_presence}}
+  - {at: "+1d11h", do: roommind.reload}
+  - {at: "+1d12h", do: ha.service, service: switch.turn_on, data: {entity_id: switch.roommind_presence}}
+expect:
+  - {check: "room.wohnzimmer.presence_away == true and dev('climate.wz_ac').mode == 'off'", at: "+1d08h30m", label: away switches the device off while presence is followed}
+  - {check: "room.wohnzimmer.presence_away == false and dev('climate.wz_ac').mode != 'off'", at: "+1d10h", label: off through the entity brings the room back while everybody is away}
+  - {check: "room.wohnzimmer.presence_away == false and dev('climate.wz_ac').mode != 'off'", at: "+1d11h30m", label: still off after a reload}
+  - {check: "room.wohnzimmer.presence_away == true and dev('climate.wz_ac').mode == 'off'", at: "+1d12h30m", label: on again through the entity after a reload switches the device off}
+  - {check: "dev('climate.wz_ac').mode != 'off'", at: "+1d19h", label: back on after return}
